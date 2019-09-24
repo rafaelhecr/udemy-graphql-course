@@ -2,26 +2,34 @@ import express from 'express';
 // import resolvers from './data/resolvers';
 
 //graphql
-import graphqlHTTP from 'express-graphql';
-import {schema} from './data/schema'
+// import graphqlHTTP from 'express-graphql';
+import {ApolloServer} from 'apollo-server-express';
+import {typeDefs} from './data/schema';
+import { resolvers } from './data/resolvers';
 
 // const root = resolvers;
 
 const app = express();
 
-app.get('/', (req, res) => {
-    res.status(200).send('Servidor respondiendo correctamente');
-})
+const server = new ApolloServer({typeDefs, resolvers});
 
-app.use('/graphql', graphqlHTTP({
-    //EL schema que va a utilizar cuando estemos en esta url
-    schema,
-    // //El resolver se pasa como Root Value
-    // rootValue: root,
+server.applyMiddleware({app});
 
-    //Utilizar Graphiql
-    graphiql: true
+app.listen({port: 8090}, () => console.log(`El servidor esta corriendo en http://localhost:8090${server.graphqlPath}`));
 
-}));
+// app.get('/', (req, res) => {
+//     res.status(200).send('Servidor respondiendo correctamente');
+// })
 
-app.listen(8090, () => console.log('Sevidor escuchando correctamente en el puerto 8090'));
+// app.use('/graphql', graphqlHTTP({
+//     //EL schema que va a utilizar cuando estemos en esta url
+//     schema,
+//     // //El resolver se pasa como Root Value
+//     // rootValue: root,
+
+//     //Utilizar Graphiql
+//     graphiql: true
+
+// }));
+
+// app.listen(8090, () => console.log('Sevidor escuchando correctamente en el puerto 8090'));
